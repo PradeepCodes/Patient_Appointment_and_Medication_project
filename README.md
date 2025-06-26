@@ -40,6 +40,13 @@ spring.jpa.hibernate.ddl-auto=update
 ▶️ Create MySQL Database (Local)
 CREATE DATABASE patient_management;
 
+Login Credentials(default)
+
+Email	               Password   	Role
+admin@example.com	   admin123  	ADMIN
+doctor@example.com	doc123	    DOCTOR
+
+
 ▶️ 2. Running the Application
 
 mvn clean install
