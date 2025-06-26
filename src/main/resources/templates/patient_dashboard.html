@@ -1,0 +1,184 @@
+<!-- Updated HTML with support for saving appointment to DB and showing table -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Patient Dashboard</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('form')">Doctor Appointment Registration</a></li>
+        <li class="nav-item"> <a class="nav-link" href="#" onclick="showSection('medication')">My Medications</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('history')">My Appointment History</a></li>
+        <li class="nav-item"><a class="nav-link text-warning" th:href="@{/}">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container mt-4">
+  <div th:if="${param.success}" class="alert alert-success">Appointment Added successfully!
+  </div>
+  <div id="section-dashboard" style="display: none;">
+    <div class="p-4 bg-light rounded shadow-sm">
+      <h2>Welcome, Patient!</h2>
+      <ul>
+        <li><strong>Today's Date:</strong> <span id="todayDate"></span></li>
+        <li><strong>Status:</strong> Logged in</li>
+      </ul>
+    </div>
+  </div>
+  <div id="section-form" style="display: none;">
+    <div class="container mt-5" style="max-width: 700px;">
+      <h2 class="text-center mb-4">Doctor Appointment Registration</h2>
+      <form id="appointmentForm" th:action="@{/appointments}" method="post">
+        <div class="mb-3">
+          <label class="form-label">Patient Name</label>
+          <input type="text"
+                 class="form-control"
+                 name="patientName"
+                 th:value="${patientName}"
+                 readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <select class="form-select" name="category" required>
+            <option disabled selected>Select Category</option>
+            <option>Cardiology</option>
+            <option>Dermatology</option>
+            <option>ENT</option>
+            <option>Neurology</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Doctor Name</label>
+          <select class="form-select" name="doctorName" required>
+            <option disabled selected>Select Doctor</option>
+            <option th:each="doc : ${doctors}"
+                    th:value="${doc.name}"
+                    th:text="${doc.name}">
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Appointment Date</label>
+          <input type="date" class="form-control" name="date" required>
+        </div>
+        <div class="d-grid mb-4">
+          <button type="button" class="btn btn-primary" onclick="showSlots()">Check Availability</button>
+        </div>
+        <div id="slotSection" style="display: none;">
+          <h5>Select a Time Slot:</h5>
+          <div class="row row-cols-2 row-cols-md-3 g-2 mt-2" id="slotsContainer"></div>
+        </div>
+        <input type="hidden" id="selectedSlot" name="timeSlot" required>
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-success">Confirm Appointment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- ✅ Medication History Section -->
+  <div id="section-medication" style="display: none;">
+    <div class="p-3 bg-light rounded shadow-sm">
+      <h3>My Medication History</h3>
+      <div th:if="${#lists.isEmpty(medications)}">
+        <p class="text-muted">No medications found.</p>
+      </div>
+      <div th:if="${!#lists.isEmpty(medications)}">
+        <table class="table table-bordered table-striped mt-3">
+          <thead class="table-dark">
+          <tr>
+            <th>Medication</th>
+            <th>Dosage</th>
+            <th>Prescribed By</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="med : ${medications}">
+            <td th:text="${med.medication}">Paracetamol</td>
+            <td th:text="${med.dosage}">500mg</td>
+            <td th:text="${med.prescribedBy}">Dr. Smith</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="section-history" style="display: none;">
+    <h3>My Appointment History</h3>
+    <table class="table table-bordered mt-3" th:if="${appointments != null && !appointments.isEmpty()}">
+      <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Patient</th>
+        <th>Category</th>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Slot</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="a : ${appointments}">
+        <td th:text="${a.id}"></td>
+        <td th:text="${a.patientName}"></td>
+        <td th:text="${a.category}"></td>
+        <td th:text="${a.doctorName}"></td>
+        <td th:text="${a.date}"></td>
+        <td th:text="${a.timeSlot}"></td>
+      </tr>
+      </tbody>
+    </table>
+    <p class="text-muted" th:if="${appointments == null || appointments.isEmpty()}">No appointments found.</p>
+  </div>
+</div>
+<script>
+  function showSlots() {
+    const slotSection = document.getElementById("slotSection");
+    const slotsContainer = document.getElementById("slotsContainer");
+    const selectedSlotInput = document.getElementById("selectedSlot");
+    slotsContainer.innerHTML = "";
+    selectedSlotInput.value = "";
+    for (let hour = 9; hour < 18; hour++) {
+      const time = `${hour}:00 - ${hour + 1}:00`;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn-outline-success w-100";
+      button.innerText = time;
+      button.onclick = function () {
+        document.querySelectorAll("#slotsContainer button").forEach(btn => btn.classList.remove("btn-success"));
+        this.classList.add("btn-success");
+        selectedSlotInput.value = time;
+      };
+      const col = document.createElement("div");
+      col.className = "col";
+      col.appendChild(button);
+      slotsContainer.appendChild(col);
+    }
+    slotSection.style.display = "block";
+  }
+  function showSection(sectionId) {
+    const sections = ['dashboard', 'form', 'history','medication'];
+    sections.forEach(id => {
+      document.getElementById('section-' + id).style.display = (id === sectionId) ? 'block' : 'none';
+    });
+  }
+
+  window.onload = function () {
+    showSection('dashboard');
+    document.getElementById("todayDate").textContent = new Date().toLocaleDateString();
+  };
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
