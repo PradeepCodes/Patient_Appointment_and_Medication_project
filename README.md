@@ -14,7 +14,7 @@ Optional: Postman for testing REST APIs
 
 ▶️ Clone the repository
 
-git clone https://github.com/PradeepCodes/Patient_Appointment_and_Medication_projec.git
+git clone https://github.com/PradeepCodes/Patient_Appointment_and_Medication_project.git
 cd Patient_Managment
 
 ▶️ Database Configuration
