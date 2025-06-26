@@ -70,20 +70,33 @@ public class DoctorController {
         return "redirect:/doctor/dashboard?medSuccess";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/doctor/medications/edit/{id}")
     public String editMedicationForm(@PathVariable Long id, Model model) {
         Medication med = medicationService.get(id);
         model.addAttribute("medication", med);
-        // If you need patients/doctors lists in the form:
         model.addAttribute("patients", patientService.getAllPatient());
         model.addAttribute("doctors", doctorService.getAllDoctors());
-        return "medications/form";    // Thymeleaf template for add/edit
+        return "medications/form"; // You should have this HTML page
     }
 
-
-    @GetMapping("/delete/{id}")
+    @GetMapping("/doctor/medications/delete/{id}")
     public String deleteMedication(@PathVariable Long id) {
         medicationService.delete(id);
-        return "redirect:/doctor_dashboard?medDeleted";
+        return "redirect:/doctor/dashboard?medDeleted";
+    }
+
+    @PostMapping("/doctor/medications/update/{id}")
+    public String updateMedication(@PathVariable Long id,
+                                   @RequestParam String patientName,
+                                   @RequestParam String medication,
+                                   @RequestParam String dosage,
+                                   @RequestParam String prescribedBy) {
+        Medication med = medicationService.get(id);
+        med.setPatientName(patientName);
+        med.setMedication(medication);
+        med.setDosage(dosage);
+        med.setPrescribedBy(prescribedBy);
+        medicationService.saveMedication(med);
+        return "redirect:/doctor/dashboard?medUpdated";
     }
 }
