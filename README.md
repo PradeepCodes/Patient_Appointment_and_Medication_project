@@ -259,9 +259,9 @@ https://dashboard.render.com/d/dpg-d13v49ggjchc73fjpim0-a
 
 Frontend
 
-https://employee-management-vodx.onrender.com
+https://patient-appointment-and-medication.onrender.com/
 
 Swagger
 
 https://patient-appointment-and-medication.onrender.com/swagger-ui/index.html
-https://patient-appointment-and-medication.onrender.com/
+
