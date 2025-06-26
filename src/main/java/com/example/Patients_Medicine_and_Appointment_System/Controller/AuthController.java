@@ -18,6 +18,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("patient", new Patient());
