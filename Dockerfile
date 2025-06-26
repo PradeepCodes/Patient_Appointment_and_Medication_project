@@ -1,5 +1,5 @@
 # 1) Build stage: compile & package into fat-jar
-FROM maven:3.9.0-jdk-17 AS builder
+FROM maven:3.9.2-eclipse-temurin-17 AS builder
 WORKDIR /workspace
 
 # Cache dependencies
@@ -17,7 +17,5 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=builder /workspace/target/*.jar app.jar
 
-# Expose port (match your Spring Boot server.port)
 EXPOSE 8080
-
 ENTRYPOINT ["java","-jar","app.jar"]
