@@ -20,4 +20,21 @@ public class DoctorService {
         return doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No doctor: " + email));
     }
+
+
+    public Doctor getDoctorById(Long id) {
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Doctor not found with ID: " + id));
+    }
+
+    public Doctor saveDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
+    }
+
+    public void deleteDoctor(Long id) {
+        if (!doctorRepository.existsById(id)) {
+            throw new IllegalArgumentException("Doctor not found with ID: " + id);
+        }
+        doctorRepository.deleteById(id);
+    }
 }

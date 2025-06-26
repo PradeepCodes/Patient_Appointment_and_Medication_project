@@ -41,5 +41,17 @@ public class PatientService {
         p.setPassword(passwordEncoder.encode(dto.getPassword()));
         patientRepository.save(p);
     }
-
+    public Patient getPatientById(Long id) {
+        return patientRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found with id: " + id));
+    }
+    public Patient savePatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+    public void deletePatient(Long id) {
+        if (!patientRepository.existsById(id)) {
+            throw new IllegalArgumentException("Patient not found with id: " + id);
+        }
+        patientRepository.deleteById(id);
+    }
 }
