@@ -43,8 +43,11 @@ CREATE DATABASE patient_management;
 Login Credentials(default)
 
 Email	                     Password   	   Role
+
 admin@example.com	        , admin123  	  ,ADMIN,
+
 doctor@example.com	      , doc123	      ,DOCTOR,
+
 pradeepcse1998@gmail.com  , 1234          , Patient 
 
 
